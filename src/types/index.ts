@@ -21,6 +21,10 @@ export interface Project {
   githubUrl?: string
   demoUrl?: string
   techStack?: string
+  context?: string
+  imageUrl?: string
+  images?: string
+  githubDisabled?: boolean
   createdAt: string
   updatedAt: string
   tasks?: Task[]
