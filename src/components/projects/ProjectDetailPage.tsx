@@ -10,7 +10,6 @@ import { useUpload } from '@/hooks/useUpload'
 import ProjectFormModal from '@/components/projects/ProjectFormModal'
 import TaskItem from '@/components/projects/TaskItem'
 
-// ─── Config ──────────────────────────────────────────────────────────────────
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   IDEA:        { label: 'Idée',      className: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
@@ -32,21 +31,15 @@ const taskStatusFilter: { key: TaskStatus | 'ALL'; label: string }[] = [
   { key: 'DONE',        label: 'Terminées' },
 ]
 
-// ─── Publish Guard ────────────────────────────────────────────────────────────
 
 function getPublishError(project: Project): string | null {
   if (!['IN_PROGRESS', 'DONE'].includes(project.status)) {
     return "Le projet doit être « En cours » ou « Terminé » pour être publié."
   }
-  if (!project.githubUrl && !project.githubDisabled) {
-    return "Un lien GitHub est requis (ou désactive-le pour les repos privés)."
-  }
-  if (!project.demoUrl) return "Un lien démo est requis pour publier."
   if (!project.techStack) return "La stack technique est requise pour publier."
   return null
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 
 interface Props {
   projectId: string
@@ -68,11 +61,9 @@ export default function ProjectDetailPage({ projectId }: Props) {
   const [isAddingTask, setIsAddingTask] = useState(false)
   const [publishError, setPublishError] = useState('')
 
-  // Images multiples
   const [extraImages, setExtraImages] = useState<string[]>([])
   const extraImagesInputRef = useRef<HTMLInputElement>(null)
 
-  // ── Loading / Error states ──────────────────────────────────────────────────
 
   if (isLoading) {
     return (
@@ -97,13 +88,11 @@ export default function ProjectDetailPage({ projectId }: Props) {
   const priority = priorityConfig[project.priority]
   const publishGuard = getPublishError(project)
 
-  // ── Filtered tasks ──────────────────────────────────────────────────────────
 
   const filteredTasks = taskFilter === 'ALL'
     ? tasks
     : tasks.filter(t => t.status === taskFilter)
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
 
   const handleDelete = () => {
     if (confirm(`Supprimer "${project.title}" ? Cette action est irréversible.`)) {
@@ -164,7 +153,6 @@ export default function ProjectDetailPage({ projectId }: Props) {
     <>
       <div className="space-y-6 pb-10">
 
-        {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
         <nav className="flex items-center gap-2 text-sm text-gray-400">
           <Link href="/projects" className="hover:text-brand-500 transition-colors">Projets</Link>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -173,7 +161,6 @@ export default function ProjectDetailPage({ projectId }: Props) {
           <span className="text-gray-600 dark:text-gray-300 truncate max-w-xs">{project.title}</span>
         </nav>
 
-        {/* ── Page Header ─────────────────────────────────────────────────── */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -219,13 +206,10 @@ export default function ProjectDetailPage({ projectId }: Props) {
           </div>
         </div>
 
-        {/* ── Grille principale ───────────────────────────────────────────── */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
-          {/* ── Colonne gauche (2/3) ──────────────────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
 
-            {/* Section Informations */}
             <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-white/[0.03] p-6">
               <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
                 Informations
@@ -312,7 +296,6 @@ export default function ProjectDetailPage({ projectId }: Props) {
               )}
             </section>
 
-            {/* Section Tâches */}
             <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-white/[0.03] p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -336,7 +319,6 @@ export default function ProjectDetailPage({ projectId }: Props) {
                 </button>
               </div>
 
-              {/* Filter tabs */}
               {tasks.length > 0 && (
                 <div className="flex gap-1 mb-4 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg w-fit">
                   {taskStatusFilter.map(f => (
@@ -355,7 +337,6 @@ export default function ProjectDetailPage({ projectId }: Props) {
                 </div>
               )}
 
-              {/* Add task inline */}
               {isAddingTask && (
                 <div className="flex items-center gap-2 mb-3 p-3 rounded-xl border border-brand-200 dark:border-brand-800 bg-brand-50/50 dark:bg-brand-900/10">
                   <input
@@ -385,7 +366,6 @@ export default function ProjectDetailPage({ projectId }: Props) {
                 </div>
               )}
 
-              {/* Task list */}
               {tasksLoading ? (
                 <div className="flex justify-center py-6">
                   <div className="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
@@ -406,10 +386,8 @@ export default function ProjectDetailPage({ projectId }: Props) {
             </section>
           </div>
 
-          {/* ── Colonne droite (1/3) ──────────────────────────────────────── */}
           <div className="space-y-6">
 
-            {/* Image principale */}
             {project.imageUrl && (
               <section className="rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <img
@@ -420,13 +398,11 @@ export default function ProjectDetailPage({ projectId }: Props) {
               </section>
             )}
 
-            {/* Section Portfolio */}
             <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-white/[0.03] p-6">
               <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
                 Portfolio
               </h2>
 
-              {/* Publish toggle */}
               <div className="mb-4">
                 <button
                   onClick={handleTogglePublish}
@@ -448,18 +424,11 @@ export default function ProjectDetailPage({ projectId }: Props) {
                 )}
               </div>
 
-              {/* Portfolio fields recap */}
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-xs">GitHub</span>
-                  <span className={`text-xs font-medium ${project.githubUrl || project.githubDisabled ? 'text-green-500' : 'text-red-400'}`}>
-                    {project.githubDisabled ? 'Désactivé (ok)' : project.githubUrl ? '✓' : '✗ Requis'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-xs">Démo</span>
-                  <span className={`text-xs font-medium ${project.demoUrl ? 'text-green-500' : 'text-red-400'}`}>
-                    {project.demoUrl ? '✓' : '✗ Requis'}
+                  <span className="text-gray-400 text-xs">Statut</span>
+                  <span className={`text-xs font-medium ${['IN_PROGRESS', 'DONE'].includes(project.status) ? 'text-green-500' : 'text-red-400'}`}>
+                    {['IN_PROGRESS', 'DONE'].includes(project.status) ? '✓' : '✗ En cours ou Terminé'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -469,14 +438,19 @@ export default function ProjectDetailPage({ projectId }: Props) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-xs">Statut</span>
-                  <span className={`text-xs font-medium ${['IN_PROGRESS', 'DONE'].includes(project.status) ? 'text-green-500' : 'text-red-400'}`}>
-                    {['IN_PROGRESS', 'DONE'].includes(project.status) ? '✓' : '✗ En cours ou Terminé'}
+                  <span className="text-gray-400 text-xs">GitHub</span>
+                  <span className="text-xs font-medium text-gray-400">
+                    {project.githubDisabled ? 'Désactivé' : project.githubUrl ? '✓' : '— Optionnel'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-xs">Démo</span>
+                  <span className="text-xs font-medium text-gray-400">
+                    {project.demoUrl ? '✓' : '— Optionnel'}
                   </span>
                 </div>
               </div>
 
-              {/* Images carousel */}
               <div className="mt-5 pt-5 border-t border-gray-100 dark:border-gray-800">
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-xs text-gray-400">Images carousel ({carouselImages.length})</p>
@@ -530,7 +504,6 @@ export default function ProjectDetailPage({ projectId }: Props) {
         </div>
       </div>
 
-      {/* Edit modal */}
       {showEditModal && (
         <ProjectFormModal
           project={project}
