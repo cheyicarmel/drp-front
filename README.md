@@ -10,8 +10,7 @@ Built with **Next.js 16 / React 19 / TypeScript / TailwindCSS 4**, based on the 
 
 This project is built on top of **TailAdmin Free** (Next.js version), a free and open-source admin dashboard template by [Pimjo](https://pimjo.com).
 
-- 🌐 Website: [tailadmin.com](https://tailadmin.com)
-- 🐙 GitHub: [github.com/TailAdmin/tailadmin-free-nextjs-admin-dashboard](https://github.com/TailAdmin/tailadmin-free-nextjs-admin-dashboard)
+- 🐙 GitHub: [https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template](https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template)
 - 📄 License: MIT
 
 The UI components, base layout structure, sidebar behavior, form elements, and typography system all come from TailAdmin Free. This project adapts and extends them for the specific needs of DrP — no components were reinvented from scratch.
