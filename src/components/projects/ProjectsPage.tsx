@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useProjects } from '@/hooks/useProjects'
 import ProjectCard from './ProjectCard'
 import ProjectFormModal from './ProjectFormModal'
-import { Project, ProjectStatus, Priority } from '@/types'
+import { Project } from '@/types'
 
 const statusOptions = [
   { value: '', label: 'Tous les statuts' },
@@ -21,16 +21,35 @@ const priorityOptions = [
   { value: 'HIGH', label: 'Haute' },
 ]
 
+const LIMIT = 9
+
 export default function ProjectsPage() {
   const [statusFilter, setStatusFilter] = useState('')
   const [priorityFilter, setPriorityFilter] = useState('')
+  const [page, setPage] = useState(1)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
 
-  const { data: projects, isLoading, isError } = useProjects({
+  const { data, isLoading, isError } = useProjects({
     status: statusFilter || undefined,
     priority: priorityFilter || undefined,
+    page,
+    limit: LIMIT,
   })
+
+  const projects = data?.projects ?? []
+  const pagination = data?.pagination
+
+  // Reset page à 1 quand on change un filtre
+  const handleStatusFilter = (value: string) => {
+    setStatusFilter(value)
+    setPage(1)
+  }
+
+  const handlePriorityFilter = (value: string) => {
+    setPriorityFilter(value)
+    setPage(1)
+  }
 
   const handleEdit = (project: Project) => {
     setEditingProject(project)
@@ -57,7 +76,7 @@ export default function ProjectsPage() {
             Projets
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {projects?.length ?? 0} projet{(projects?.length ?? 0) > 1 ? 's' : ''}
+            {pagination?.total ?? 0} projet{(pagination?.total ?? 0) > 1 ? 's' : ''}
           </p>
         </div>
         <button
@@ -75,7 +94,7 @@ export default function ProjectsPage() {
       <div className="flex flex-col gap-3 sm:flex-row">
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => handleStatusFilter(e.target.value)}
           className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           {statusOptions.map(o => (
@@ -84,7 +103,7 @@ export default function ProjectsPage() {
         </select>
         <select
           value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
+          onChange={(e) => handlePriorityFilter(e.target.value)}
           className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           {priorityOptions.map(o => (
@@ -102,7 +121,7 @@ export default function ProjectsPage() {
         <div className="px-4 py-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
           Impossible de charger les projets.
         </div>
-      ) : projects?.length === 0 ? (
+      ) : projects.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 text-center">
           <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400">
@@ -120,15 +139,48 @@ export default function ProjectsPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {projects?.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onEdit={handleEdit}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {projects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onEdit={handleEdit}
+              />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-sm text-gray-400">
+                Page {pagination.page} sur {pagination.totalPages}
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage(p => p - 1)}
+                  disabled={!pagination.hasPrevPage}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-brand-500 hover:text-brand-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Précédent
+                </button>
+                <button
+                  onClick={() => setPage(p => p + 1)}
+                  disabled={!pagination.hasNextPage}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-brand-500 hover:text-brand-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600"
+                >
+                  Suivant
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal */}

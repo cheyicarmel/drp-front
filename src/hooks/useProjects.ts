@@ -2,15 +2,36 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { Project } from '@/types'
 
-export function useProjects(filters?: { status?: string; priority?: string }) {
+interface ProjectsResponse {
+  projects: Project[]
+  pagination: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    hasNextPage: boolean
+    hasPrevPage: boolean
+  }
+}
+
+interface ProjectFilters {
+  status?: string
+  priority?: string
+  page?: number
+  limit?: number
+}
+
+export function useProjects(filters?: ProjectFilters) {
   return useQuery({
     queryKey: ['projects', filters],
     queryFn: async () => {
       const params = new URLSearchParams()
       if (filters?.status) params.append('status', filters.status)
       if (filters?.priority) params.append('priority', filters.priority)
+      if (filters?.page) params.append('page', String(filters.page))
+      if (filters?.limit) params.append('limit', String(filters.limit))
       const response = await api.get(`/projects?${params.toString()}`)
-      return response.data.projects as Project[]
+      return response.data as ProjectsResponse
     }
   })
 }
