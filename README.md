@@ -10,7 +10,7 @@ Built with **Next.js 16 / React 19 / TypeScript / TailwindCSS 4**, based on the 
 
 This project is built on top of **TailAdmin Free** (Next.js version), a free and open-source admin dashboard template by [Pimjo](https://pimjo.com).
 
-- 🐙 GitHub: [https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template](https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template)
+- 🐙 GitHub: [github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template](https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template)
 - 📄 License: MIT
 
 The UI components, base layout structure, sidebar behavior, form elements, and typography system all come from TailAdmin Free. This project adapts and extends them for the specific needs of DrP — no components were reinvented from scratch.
@@ -77,7 +77,7 @@ npm run dev
 
 App runs on `http://localhost:3000` by default.
 
-Make sure the [DrP API](https://github.com/your-username/drp-api) is running locally on port `5000` before starting the frontend.
+Make sure [drp-api](https://github.com/your-username/drp-api) is running locally on port `5000` before starting the frontend.
 
 ---
 
@@ -85,12 +85,6 @@ Make sure the [DrP API](https://github.com/your-username/drp-api) is running loc
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
-
-In production, replace with your Render API URL:
-
-```env
-NEXT_PUBLIC_API_URL=https://your-api.onrender.com/api
 ```
 
 ---
@@ -149,8 +143,6 @@ src/
 
 ## Authentication
 
-Authentication is handled via JWT:
-
 1. User submits credentials → `POST /api/auth/login`
 2. Token is stored in both `localStorage` (for Axios interceptor) and a cookie `drp_token` (for Next.js middleware route protection)
 3. All private routes are protected by `src/middleware.ts` — unauthenticated users are redirected to `/signin`
@@ -161,21 +153,20 @@ Authentication is handled via JWT:
 ## Key Features
 
 ### Dashboard
-Real-time stats fetched from `GET /api/stats`: total projects, breakdown by status, total tasks, breakdown by task status, and a table of the 5 most recently updated projects.
+Real-time stats from `GET /api/stats`: total projects and tasks, breakdown by status, and a table of the 5 most recently updated projects.
 
 ### Projects list
-Grid of project cards with status/priority filters and pagination (9 per page). Each card links to the project detail page. Full CRUD and publish toggle available inline.
+Grid of project cards with status/priority filters and pagination (9 per page). Full CRUD and publish toggle available inline.
 
 ### Project detail
-The most complete page of the app:
 - Project header with status, priority, and publish state
 - Information section: description, context, estimated hours, tech stack pills, GitHub and demo links
-- Task management: create, edit (inline), delete, status cycle (TODO → IN_PROGRESS → DONE), accordion to reveal subtasks
+- Task management: inline create and edit, status cycle (TODO → IN_PROGRESS → DONE), accordion subtasks
 - Subtask management: inline create, checkbox toggle, delete on hover
-- Portfolio section: publish/unpublish button with validation, carousel image upload and management
+- Portfolio section: publish/unpublish with validation, carousel image upload and management
 
 ### Image upload
-Images are uploaded directly to Cloudinary via `POST /api/upload`. The main project image is stored in `imageUrl`. Additional carousel images are stored as a comma-separated string in `images` and managed from the project detail page.
+Uploaded directly to Cloudinary via `POST /api/upload`. Main image stored in `imageUrl`, carousel images stored as a comma-separated string in `images`.
 
 ### Dark mode
-Toggled via a button in the header and sidebar footer. Persisted in `localStorage`. The `dark` class is applied on the `<html>` element.
+Toggle in the header. Persisted in `localStorage` via the `dark` class on `<html>`.
